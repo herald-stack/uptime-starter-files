@@ -1,0 +1,71 @@
+# Uptime Herald - https://uptimeherald.org
+# Copyright (C) 2026 Uptime Herald Authors
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# monitors.default.yaml - Default monitors. Save as monitors.yaml.
+#
+monitors:
+  # Checks the health page of Uptime Herald itself, so a new install has a working monitor
+  # to show. Keep it and/or replace it with your own monitors. Do not modify the port used
+  # for this monitor if you want it to work. It points to the local port inside the
+  # container, not the public external port.
+  - name: "Uptime Herald"
+    type: http
+    url: "http://localhost:8080/health"
+
+# To add monitors, put the entries under "monitors:" above, indented as in the examples.
+#
+# Additional details on each setting: https://uptimeherald.org/docs/monitors/
+#
+# A setting name that isn't listed in this file is a configuration error, so a typo can't
+# silently do nothing. A setting for another monitor type (port on a ping monitor, for
+# example) is an error too, and so is a setting written with nothing after it. Delete or
+# comment out a setting you aren't using.
+#
+# Settings for every monitor:
+#   name     Required. Must be unique (but case insensitive) and not blank, at most 255
+#            characters, with no line breaks or tabs and no space at either end. Put it in
+#            quotes if it looks like a number. "all" can't be used as a name.
+#   type     Required. One of: ping, http, tcp.
+#   active   Optional. true by default. false stops the checks and shows the monitor as
+#            INACTIVE in the sidebar.
+#   tags     Optional. A list of tags. Any tags used must be declared in tags.yaml. A tag
+#            can contain letters and digits in any language, hyphens (-), and underscores
+#            (_). "all" can't be used as a tag.
+#   timeout  Optional. Seconds to wait for a response, 1 to 300. Uses the timeout in
+#            config.yaml (10 by default) if left out.
+#
+# Settings for each type:
+#   ping     host (required), count (optional, number of pings per check, 1 by default,
+#            at most the timeout)
+#   http     url (required, must follow the URL rules at
+#            https://uptimeherald.org/docs/hosts-urls/), verify_ssl (optional, true by
+#            default, false skips the certificate check), expected_status (optional, the
+#            one status code that counts as "up" instead of any 2xx result), credentials
+#            (optional, the label of a credential in credentials.ini)
+#   tcp      host and port (both required, port 1 to 65535)
+#
+# A monitor can also override these settings from config.yaml for itself only:
+#   check_interval_minutes, retention_days, alert_retries, retry_interval_minutes,
+#   retry_on_up, alert_cooldown_minutes
+#
+# Example monitors:
+#
+#   - name: "My Server"
+#     type: ping
+#     host: myserver
+#     active: true
+#     check_interval_minutes: 5
+#     tags: ["production", "critical"]  # optional
+#
+#   - name: "Web Service"
+#     type: http
+#     url: "https://example.com"
+#     active: true
+#     # expected_status: 401  # only if 2xx isn't what "up" looks like here
+#
+#   - name: "Database Port"
+#     type: tcp
+#     host: dbserver
+#     port: 3306
+#     active: false

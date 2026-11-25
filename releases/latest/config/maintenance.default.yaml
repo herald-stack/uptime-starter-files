@@ -1,0 +1,107 @@
+# Uptime Herald - https://uptimeherald.org
+# Copyright (C) 2026 Uptime Herald Authors
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# maintenance.default.yaml - Default maintenance windows. Save as maintenance.yaml.
+#
+maintenance: []
+# To add maintenance windows, change the line above to "maintenance:" and put the entries
+# below it, indented as in the examples. If you comment out every window again, write []
+# after "maintenance:", as in the line above.
+#
+# A monitor is not checked while it is in a maintenance window. The dashboard shows it as in
+# maintenance, and a maintenance entry is added to its check log at its check interval.
+#
+# Additional details on each setting: https://uptimeherald.org/docs/maintenance/
+#
+# A setting name that isn't listed in this file is a configuration error, so a typo can't
+# silently do nothing.
+#
+# Settings for every maintenance window:
+#
+#   name        Required. Shown on the dashboard and in the check log while the maintenance
+#               window is active. Each maintenance window needs a different name (but case
+#               insensitive). A name cannot be blank, can be at most 255 characters, and
+#               cannot contain line breaks or tabs or start or end with a space. A name that
+#               looks like a number, such as "5", must be in quotes.
+#
+#   start_day   Required. When the maintenance window starts. Put the value in quotes.
+#               Valid formats:
+#               - "Sunday": a day of the week, which repeats the window every week
+#               - "2nd Tuesday": a day with an ordinal, which repeats every month. The
+#                 ordinals are 1st, 2nd, 3rd, 4th, and last (as in "last Friday")
+#               - "2026-07-15": a date, written YYYY-MM-DD, which happens once
+#               Days of the week must be real days, dates must be real dates, and names of
+#               days and ordinals are not case sensitive.
+#
+#   end_day     Required. When the maintenance window ends. Put the value in quotes. Use the
+#               same format as start_day, or "following" and a day of the week (such as
+#               "following Wednesday"), which ends the window on the first such day after it
+#               starts. A maintenance window can end on a later day than it starts, such as
+#               Sunday to Monday. When using dates, end_day can't be before start_day. A
+#               window that repeats every week can't last a week or longer, such as "Sunday"
+#               01:00 to "following Sunday" 02:00, because it would overlap itself. When
+#               start_day and end_day are the same day, end_time must be after start_time. Be
+#               careful with ordinal days: they can land in a different order from month to
+#               month. In July 2026 the 2nd Wednesday is the 8th and the 2nd Tuesday is the
+#               14th, so "2nd Tuesday" to "2nd Wednesday" would end before it starts, which
+#               is a configuration error. To end on a different day, use "following
+#               Wednesday".
+#
+#   start_time  Required. The time of day the maintenance window starts, as "HH:MM" on a
+#               24-hour clock. Put the value in quotes, with a two-digit hour. For example:
+#               "22:00". Uses the timezone set in config.yaml.
+#
+#   end_time    Required. The time of day the maintenance window ends, in the same format.
+#               For example: "23:00". Maintenance windows follow the wall clock, so a
+#               daylight saving change doesn't move them. A "22:00" start is still 22:00
+#               local time after the shift. A window that spans the change runs an hour
+#               shorter in spring and an hour longer in autumn, since the missing or
+#               repeated hour falls inside the window.
+#
+#   monitors    The monitors the maintenance window applies to: a list of monitor names, or
+#               "all" for every monitor. Monitor names must match those listed in
+#               monitors.yaml.
+#
+#   tags        The tags the maintenance window applies to: a list of tags, or "all" for
+#               every monitor that has at least one tag. Any tags used must be declared
+#               inside tags.yaml.
+#
+#               At least one of monitors and tags is required. If a window has both, it
+#               applies to every monitor named in monitors and also to every monitor that has
+#               any tag listed in tags. Delete or comment out a setting you aren't using. A
+#               setting left empty is a configuration error.
+#
+#   resume      Optional. What happens to a monitor's first check when its maintenance
+#               window ends:
+#               - "verify" (default if unspecified) treats it like a status change and
+#                 alert_retries extra checks are run, retry_interval_minutes apart, before a
+#                 changed status is confirmed and an alert is sent (if necessary).
+#               - "normal" waits for the next regular check as if the maintenance window had
+#                 not happened. The monitor's status is still what it was before the window
+#                 began. If the check finds a different status, it is handled like any other
+#                 status change.
+#
+# Example:
+#   - name: "Sunday Reboot"
+#     start_day: "Sunday"
+#     start_time: "23:30"
+#     end_day: "Monday"
+#     end_time: "00:30"
+#     monitors: ["Primary Server", "Web Service"]    # list of names, or "all"
+#     resume: "verify"
+#
+#   - name: "Patch Tuesday"
+#     start_day: "2nd Tuesday"
+#     start_time: "20:00"
+#     end_day: "2nd Tuesday"
+#     end_time: "23:00"
+#     tags: ["windows-servers"]
+#     resume: "normal"
+#
+#   - name: "Network Upgrade"
+#     start_day: "2026-11-20"
+#     start_time: "18:00"
+#     end_day: "2026-11-23"
+#     end_time: "06:00"
+#     monitors: "all"

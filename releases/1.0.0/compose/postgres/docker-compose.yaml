@@ -1,0 +1,102 @@
+# Uptime Herald - https://uptimeherald.org
+# Copyright (C) 2026 Uptime Herald Authors
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# docker-compose.yaml - Uptime Herald with a bundled PostgreSQL database.
+#
+services:
+  uptimeherald:
+    image: ghcr.io/herald-stack/uptime-herald:1.0.0
+    container_name: uptimeherald
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/app/config:ro
+    environment:
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      # The database name, user and passwords have no defaults. Docker compose
+      # will not start until they are set in .env.
+      - DB_BACKEND=postgres
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:?Set DB_NAME in .env}
+      - DB_USER=${DB_USER:?Set DB_USER in .env}
+      - DB_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      - DB_POOL_MIN_SIZE=${DB_POOL_MIN_SIZE:-1}
+      - DB_POOL_MAX_SIZE=${DB_POOL_MAX_SIZE:-5}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # DNS — uncomment if containers have DNS resolution issues:
+    # dns:
+    #   - 9.9.9.9
+    #   - 149.112.112.112
+    restart: unless-stopped
+
+  # A helper container runs briefly on every "docker compose up", then exits. It copies
+  # the upgrade-postgres.sh script to the ./scripts folder. Make sure to create the
+  # ./scripts folder before the first start so the script is owned by you.
+  postgres-init:
+    image: ghcr.io/herald-stack/uptimeherald-postgres-init:1.0.0
+    container_name: uptimeherald-postgres-init
+    user: "0:0"
+    entrypoint:
+      - sh
+      - -c
+      - >-
+        cp -f /app/postgres-init/01-create-app-role.sh /out/ &&
+        cp -f /app/scripts/upgrade-postgres.sh /scripts/ &&
+        chown "$$(stat -c %u:%g /scripts)" /scripts/upgrade-postgres.sh
+    volumes:
+      - postgres-init:/out
+      - ./scripts:/scripts
+    network_mode: none
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+    restart: "no"
+
+  postgres:
+    # PostgreSQL is pinned to the most recent major version. It can't start a newer major
+    # version against a data volume written by an older one, so updating the tag by itself
+    # will cause the database container to refuse to start.
+    # To move to a newer major version, run
+    #   ./scripts/upgrade-postgres.sh <version>
+    # where <version> is the major version number you are moving to.
+    # The script backs up the database to ./backups, replaces the data volume with one for
+    # the new version, restores the backup into it, and checks the row counts. It also
+    # modifies this yaml file to use the new version and saves your original as
+    # docker-compose.yaml.pre-upgrade.
+    # Additional info on supported versions and how to move between them:
+    # https://uptimeherald.org/docs/databases/
+    image: postgres:19
+    container_name: uptimeherald-postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      # This script creates the software's own non-superuser role (DB_USER) and makes it
+      # the owner of DB_NAME. It only runs the first time the database starts.
+      - postgres-init:/docker-entrypoint-initdb.d:ro
+    depends_on:
+      postgres-init:
+        condition: service_completed_successfully
+    environment:
+      - POSTGRES_DB=${DB_NAME:?Set DB_NAME in .env}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_ROOT_PASSWORD:?Set POSTGRES_ROOT_PASSWORD in .env}
+      - DB_USER=${DB_USER:?Set DB_USER in .env}
+      - DB_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} && sleep 2 && pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  postgres-init:

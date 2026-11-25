@@ -1,0 +1,108 @@
+# Uptime Herald - https://uptimeherald.org
+# Copyright (C) 2026 Uptime Herald Authors
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# config.default.yaml - Default global settings. Save as config.yaml.
+#
+# Additional details on each setting: https://uptimeherald.org/docs/config/
+#
+# A setting name that isn't listed in this file is a configuration error, so a typo can't
+# silently do nothing. A setting written with nothing after it, such as "timeout:", is
+# a configuration error too.
+
+global:
+  # How often each monitor is checked, in minutes. Minimum 1, maximum 10080. A monitor can
+  # override this with its own check_interval_minutes.
+  check_interval_minutes: 5
+
+  # Seconds a check waits for a response before giving up. Minimum 1, maximum 300. A monitor
+  # can override this with its own timeout.
+  timeout: 10
+
+  # Spreads the monitors' checks across this many seconds so they don't all fire at the same
+  # instant. 0 turns staggering off. Maximum 3600.
+  stagger_seconds: 30
+
+  # The length, in days, of the maximum calculated statistics on the dashboard. The 24h, 7d,
+  # and 30d windows are always shown alongside it. Minimum 31, maximum 3650.
+  stats_period_days: 90
+
+  # How many days of monitor history to keep. Must be equal to or greater than
+  # stats_period_days and latency_graph_days, and no more than 3650. A monitor can override
+  # this with its own retention_days, which follows the same rules.
+  retention_days: 90
+
+  # The length of time the uptime percentage of each monitor in the sidebar is
+  # calculated. Options: "24h", "7d", "30d", "period" (where "period" is stats_period_days
+  # defined above), or "none" to not show an uptime percentage.
+  sidebar_uptime_period: "period"
+
+  # Minimum minutes between repeat "down" alerts for the same monitor. Minimum 1, maximum
+  # 10080. A monitor can override this with its own alert_cooldown_minutes.
+  alert_cooldown_minutes: 5
+
+  # When a check changes a monitor's state, this many extra checks are run before the status
+  # change is confirmed and an alert is sent. 0 alerts on the changed status. Whole numbers
+  # from 0 to 100. A monitor can override this with its own alert_retries.
+  alert_retries: 2
+
+  # Time in minutes between the alert retry checks. Minimum 1, maximum 1440. A monitor can
+  # override this with its own retry_interval_minutes.
+  retry_interval_minutes: 1
+
+  # Whether a monitor recovery gets additional alert retry checks before it is confirmed.
+  # False confirms a recovery on the first check that is up. A monitor can override this with
+  # its own retry_on_up.
+  retry_on_up: true
+
+  # Show monitors that are confirmed down at the top of the sidebar.
+  pin_down_monitors: true
+
+  # Delete the stored history of a monitor after it is removed from monitors.yaml. False
+  # keeps it.
+  cleanup_removed_monitors: true
+
+  # Minutes to wait after a monitor disappears from monitors.yaml before its history is
+  # deleted. If it comes back within that time, its history is kept. 0 deletes it the next
+  # time the config is re-read, which happens about once a minute. Maximum 10080.
+  cleanup_grace_minutes: 20
+
+  # Your contact email. When set, it is added to the User-Agent that HTTP monitors send, so
+  # the owner of a site you monitor can reach you. This email address is not used as part of
+  # SMTP based email alerts. Must be a valid email address in plain ASCII, with a dot in the
+  # domain.
+  # contact_email: "example@example.com"
+
+  # Minutes between automatic refreshes of the dashboard. 0 turns auto-refresh off. Maximum 1440.
+  ui_refresh_minutes: 2
+
+  # Days of data shown in the latency graph on a monitor's page. Minimum 1, maximum 3650.
+  # It can't be larger than retention_days, including a monitor's own independent
+  # retention_days.
+  latency_graph_days: 1
+
+  # Rows per page in the check log. Minimum 1, maximum 1000.
+  checks_per_page: 30
+
+  # On the kiosk page (/kiosk), minutes each monitor stays on screen before it cycles to the
+  # next one. Minimum 1, maximum 1440.
+  kiosk_refresh_minutes: 1
+
+  # What the check log lists. False shows only the monitor checks where a monitor's status
+  # has changed. True shows every monitor check made.
+  view_all_checks: false
+
+  # The timezone used for times shown in the dashboard and for maintenance windows. Use IANA
+  # timezone names, such as "America/Chicago" or "Europe/Berlin". The default, "UTC"
+  # (Coordinated Universal Time), has no offset and no daylight saving changes.
+  timezone: "UTC"
+
+  # The language of the dashboard and of alert messages. Only English ("en") is included as
+  # of now, and any other value is rejected. Support for additional languages is planned.
+  language: "en"
+
+  # Decimal places shown for uptime percentages. Up to 6.
+  uptime_decimals: 2
+
+  # Decimal places shown for latency in milliseconds. Up to 6.
+  latency_decimals: 1

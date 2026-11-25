@@ -1,0 +1,33 @@
+# Uptime Herald - https://uptimeherald.org
+# Copyright (C) 2026 Uptime Herald Authors
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# docker-compose-external.yaml - Uptime Herald with a MariaDB server you run yourself.
+#
+services:
+  uptimeherald:
+    image: ghcr.io/herald-stack/uptime-herald:1.0.0
+    container_name: uptimeherald
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/app/config:ro
+    environment:
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - DB_BACKEND=mariadb
+      # Your database server. The host, database name, user and password have no
+      # defaults. Docker compose will not start until they are set in .env. The port
+      # defaults to the standard one for MariaDB.
+      - DB_HOST=${DB_HOST:?Set DB_HOST in .env}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_NAME=${DB_NAME:?Set DB_NAME in .env}
+      - DB_USER=${DB_USER:?Set DB_USER in .env}
+      - DB_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      - DB_POOL_MIN_SIZE=${DB_POOL_MIN_SIZE:-1}
+      - DB_POOL_MAX_SIZE=${DB_POOL_MAX_SIZE:-5}
+    # DNS — uncomment if containers have DNS resolution issues:
+    # dns:
+    #   - 9.9.9.9
+    #   - 149.112.112.112
+    restart: unless-stopped

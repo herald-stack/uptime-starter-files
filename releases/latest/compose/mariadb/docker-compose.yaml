@@ -1,0 +1,70 @@
+# Uptime Herald - https://uptimeherald.org
+# Copyright (C) 2026 Uptime Herald Authors
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# docker-compose.yaml - Uptime Herald with a bundled MariaDB database.
+#
+services:
+  uptimeherald:
+    image: ghcr.io/herald-stack/uptime-herald:latest
+    container_name: uptimeherald
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/app/config:ro
+    environment:
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      # The database name, user and passwords have no defaults. Docker compose
+      # will not start until they are set in .env.
+      - DB_BACKEND=mariadb
+      - DB_HOST=${DB_HOST:-mariadb}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_NAME=${DB_NAME:?Set DB_NAME in .env}
+      - DB_USER=${DB_USER:?Set DB_USER in .env}
+      - DB_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      - DB_POOL_MIN_SIZE=${DB_POOL_MIN_SIZE:-1}
+      - DB_POOL_MAX_SIZE=${DB_POOL_MAX_SIZE:-5}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    # DNS — uncomment if containers have DNS resolution issues:
+    # dns:
+    #   - 9.9.9.9
+    #   - 149.112.112.112
+    restart: unless-stopped
+
+  mariadb:
+    # The "latest" tag follows MariaDB's newest release, updating to new versions
+    # as they ship. Some of those are short-term releases that are supported for
+    # only a few months. The software will warn you before your database version
+    # is no longer supported. If you'd rather stay on a long-term-support version,
+    # pin one of the following:
+    #   image: mariadb:lts      (current LTS, updates when newer LTS releases)
+    #   image: mariadb:12.3     (current LTS, stays on this series, patch updates only)
+    # Additional info on supported versions and how to move between them:
+    # https://uptimeherald.org/docs/databases/
+    image: mariadb:latest
+    container_name: uptimeherald-mariadb
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:?Set MARIADB_ROOT_PASSWORD in .env}
+      - MARIADB_DATABASE=${DB_NAME:?Set DB_NAME in .env}
+      - MARIADB_USER=${DB_USER:?Set DB_USER in .env}
+      - MARIADB_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      # Upgrades MariaDB's system tables automatically when you start a newer MariaDB
+      # version on an existing data directory (for example 11.8 -> 12.3). It saves a
+      # backup of the system database in the data directory first. Without this setting
+      # the upgrade is skipped and MariaDB starts with the old system tables.
+      - MARIADB_AUTO_UPGRADE=1
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  mariadb-data:

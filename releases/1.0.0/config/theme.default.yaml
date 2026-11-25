@@ -1,0 +1,51 @@
+# Uptime Herald - https://uptimeherald.org
+# Copyright (C) 2026 Uptime Herald Authors
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# theme.default.yaml - Default dashboard colors. Save as theme.yaml.
+#
+# Edit these values to customize the dashboard appearance. All colors support standard CSS
+# hex (#rgb, #rrggbb, or #rrggbbaa), rgb(), rgba(), or named colors.
+#
+# A value that isn't valid is replaced with its default, and a warning is written to the
+# software logs. A value you leave out uses its default as well. Changes show up when the
+# page is reloaded.
+#
+# Additional details on each setting: https://uptimeherald.org/docs/theme/
+#
+# A section or setting name that isn't listed in this file is ignored, and a warning is written
+# to the software logs.
+
+backgrounds:
+  page: "#161616"           # page body
+  header: "#161616"         # top of the sidebar, behind the logo
+  list_row: "#0d0d0d"       # monitor rows in the sidebar, and the area behind their bars
+  list_row_hover: "#212621" # monitor row when hovered or selected
+  main: "#212621"           # detail panel
+  cards: "#0d0d0d"          # metric cards and latency graph
+  input: "#161616"          # pagination buttons, page number box, and filter dropdowns
+  footer: "#0d0d0d"         # sidebar footer
+
+text:
+  main: "#ffffff"              # primary text
+  muted: "#999999"             # secondary text, labels, legends
+  accent: "#00dd00"            # the logo at the top of the sidebar, and the latency graph line
+
+links:
+  color: "#00dd00"             # monitor URL link in the detail panel, and footer links on hover
+  hover_line: dotted        # underline on hover: none, solid, dotted, dashed, double, groove, ridge, inset, outset
+
+borders:
+  main: "#070707"           # detail panel, monitor row, and sidebar footer borders
+  accent: "#00dd00"            # metric card & latency graph borders plus hover/focus highlights
+  table: "#161616"          # check log row borders
+  dropdown: "#212621"       # filter dropdown borders
+
+status:
+  up: "#00dd00"                # a monitor with status "up"
+  down: "#990000"              # a monitor with status "down"
+  mixed: "#ffbf00"          # an hour with multiple statuses, maintenance, or verification
+  nodata: "#313331"         # an inactive monitor or an hour with no checks
+
+graphs:
+  lines: "#161616"          # latency graph gridlines

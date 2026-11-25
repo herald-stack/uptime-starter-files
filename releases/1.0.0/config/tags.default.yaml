@@ -1,0 +1,44 @@
+# Uptime Herald - https://uptimeherald.org
+# Copyright (C) 2026 Uptime Herald Authors
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# tags.default.yaml - Default tags. Save as tags.yaml.
+#
+# To add tags, change the "tags: []" line below to "tags:" and put the tag names under it,
+# indented as in the example.
+#
+# This file is the list of tags that can be used. A tag used in monitors.yaml, in an email
+# recipients entry or a push_alerts entry in alerts.yaml, or in maintenance.yaml must be
+# listed here.
+# A tag that isn't listed is a configuration error. The dashboard shows an error page, and
+# monitoring doesn't start until it is fixed. A running instance keeps using its last
+# working configuration.
+#
+# A tag can contain letters and digits in any language, hyphens (-), and underscores (_).
+# Spaces and other punctuation or symbols aren't allowed, a tag can be at most 255
+# characters long, and "all" can't be used as a tag name.
+#
+# Additional details on tags: https://uptimeherald.org/docs/tags/
+#
+# The key of this file must be "tags:". Any other key is a configuration error.
+#
+# What tags are used for:
+#
+#   monitors.yaml     Labeling monitors. Alerts and maintenance windows use a monitor's
+#                     tags to choose which monitors they apply to, and the dashboard
+#                     sidebar filter lists the tags that monitors have. The filter appears
+#                     once at least one monitor has a tag.
+#   alerts.yaml       An email recipients entry or a push alert is for the monitors that
+#                     have at least one of its tags, as well as any monitors it lists by
+#                     name. Setting tags to "all" means every monitor that has at least
+#                     one tag.
+#   maintenance.yaml  A maintenance window includes every monitor that has at least one of
+#                     its tags, as well as any monitors it lists by name. Setting tags to
+#                     "all" means every monitor that has at least one tag.
+#
+# Example:
+#   - "production"
+#   - "testing"
+#   - "critical"
+
+tags: []
