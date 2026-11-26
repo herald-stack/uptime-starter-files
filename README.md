@@ -29,3 +29,4 @@ Open an issue at [issues.uptimeherald.org](https://issues.uptimeherald.org).
 ## License
 
 Uptime Herald is licensed under the GNU Affero General Public License version 3. See `LICENSE`.
+
