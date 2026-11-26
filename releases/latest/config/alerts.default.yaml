@@ -58,7 +58,7 @@ alerts:
   # software logs.
   #
   # Push alerts. These fields are required for each type:
-  #   discord, mattermost, rocket.chat, slack, generic   url
+  #   discord, mattermost, rocketchat, slack, generic    url
   #   telegram                                           bot_token and chat_id
   #   ntfy                                               url
   #   callmebot                                          depends on its channel (below)
@@ -86,7 +86,7 @@ alerts:
   #     url: "https://mattermost.example.com/hooks/your-webhook-token"
   #     monitors: "all"
   #
-  #   - type: rocket.chat
+  #   - type: rocketchat
   #     url: "https://chat.example.com/hooks/your-webhook-id/your-webhook-token"
   #     monitors: "all"
   #

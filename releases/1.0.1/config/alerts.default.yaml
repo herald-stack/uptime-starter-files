@@ -1,0 +1,144 @@
+# Uptime Herald - https://uptimeherald.org
+# Copyright (C) 2026 Uptime Herald Authors
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# alerts.default.yaml - Default alert settings. Save as alerts.yaml.
+#
+alerts:
+  # An alert is sent when a monitor goes down and when it recovers. While a monitor stays
+  # down, the down alert is repeated at most once every alert_cooldown_minutes (see
+  # config.yaml).
+  #
+  # Additional details on each setting: https://uptimeherald.org/docs/alerts/
+  #
+  # A setting name that isn't listed in this file is a configuration error, so a typo can't
+  # silently do nothing.
+  #
+  # Email. Email alerts are sent only when at least one entry in recipients is enabled
+  # (this file ships with none). Each entry is a group of people: its to is a list of
+  # addresses (they must be well-formed, such as you@example.com), and monitors, tags, or
+  # both say which monitors it is for. When an entry is enabled, these are also required:
+  # smtp_host, smtp_port, and from. Email is sent using STARTTLS, so use a port that
+  # supports it (typically 587). Implicit TLS (typically port 465) and unencrypted servers
+  # are not supported. from_name can be at most 255 characters and subject_prefix at most
+  # 50, and neither can contain line breaks or tabs. System notices always use the subject
+  # prefix [Uptime Herald Notice], which subject_prefix doesn't change.
+  #
+  # Choosing monitors. Each enabled alert needs monitors, tags, or both, set to "all" or
+  # to a list:
+  #   monitors: "all"            every monitor
+  #   monitors: ["My Server"]    only these monitors (names as in monitors.yaml)
+  #   tags: "all"                every monitor that has at least one tag
+  #   tags: ["critical"]         every monitor that has at least one of these tags
+  # An alert is sent for a monitor if either setting matches it. Delete or comment out a
+  # setting you aren't using, don't leave it empty.
+
+  email:
+    # from: "uptimeherald@example.com"
+    # from_name: "Uptime Herald"        # optional, "Uptime Herald" by default
+    # subject_prefix: "[Uptime Herald]" # optional, "[Uptime Herald]" by default
+    # smtp_host: "smtp.example.com"
+    # smtp_port: 587
+    # The SMTP username and password are not set here. Put SMTP_USER=... and SMTP_PASSWORD=...
+    # in your .env file.
+    # To set up email, uncomment from, smtp_host, and smtp_port above and fill in your
+    # values, then replace the "recipients: []" line below with a list like this one:
+    #   recipients:                         # one entry per group of people
+    #     - to: ["you@example.com"]
+    #       monitors: "all"                 # needed in each entry, unless tags is set
+    #       # tags: ["critical"]            # monitors with at least one of these tags
+    #       # enabled: false                # optional, true by default
+    #       # system: false                 # optional, true by default
+    recipients: []
+
+  # System notices (for example "your database is nearing end of support") are sent to
+  # every enabled alert (each email recipients entry counts), except one that says
+  # "system: false". If every enabled alert says "system: false", system notices are
+  # delivered nowhere but the software logs. System notices are always written to the
+  # software logs.
+  #
+  # Push alerts. These fields are required for each type:
+  #   discord, mattermost, rocketchat, slack, generic    url
+  #   telegram                                           bot_token and chat_id
+  #   ntfy                                               url
+  #   callmebot                                          depends on its channel (below)
+  #
+  # Every entry needs a type, one of those listed above. An entry with no type, or a type
+  # that isn't listed, such as a misspelled "discrod", is a configuration error. In this
+  # case, the dashboard shows an error page, and monitoring doesn't start until it is
+  # fixed. A running instance keeps using its last working configuration.
+  #
+  # Every entry needs monitors, tags, or both (see "Choosing monitors" above). Every entry
+  # can also have:
+  #   enabled: false    to turn the alert off without deleting it (true by default)
+  #   monitors: ...     which monitors the alert is for, "all" or a list of names
+  #   tags: ...         which monitors the alert is for, "all" or a list of tags
+  #   system: false     to not send system notices here (true by default)
+  #
+  # push_alerts:
+  #   - type: discord
+  #     url: "https://discord.com/api/webhooks/123456789012345678/your-webhook-token"
+  #     enabled: true
+  #     monitors: "all"
+  #     # tags: ["critical"]  # or only monitors that have one of these tags
+  #
+  #   - type: mattermost
+  #     url: "https://mattermost.example.com/hooks/your-webhook-token"
+  #     monitors: "all"
+  #
+  #   - type: rocketchat
+  #     url: "https://chat.example.com/hooks/your-webhook-id/your-webhook-token"
+  #     monitors: "all"
+  #
+  #   - type: slack
+  #     url: "https://hooks.slack.com/services/T00000000/B00000000/your-webhook-token"
+  #     monitors: "all"
+  #
+  #   # telegram: a bot_token is digits, a colon, then letters, digits, hyphens, or
+  #   # underscores. A chat_id is a number or the "@name" of a public channel or group.
+  #   - type: telegram
+  #     bot_token: "123456789:your-bot-token"
+  #     chat_id: "123456789"
+  #     monitors: "all"
+  #
+  #   # ntfy: username and password use basic authentication, token uses a bearer token
+  #   # (if both are given, username and password are used). priority is min, low,
+  #   # default, high, or max. username, password, and token are at most 255 characters
+  #   # with no line breaks or tabs, and a token can't contain spaces either.
+  #   - type: ntfy
+  #     url: "https://ntfy.sh/your-topic"
+  #     # username: "example"
+  #     # password: "secret"
+  #     # token: "tk_abc123"
+  #     # priority: default
+  #     monitors: "all"
+  #
+  #   # callmebot: channel is required, one of whatsapp, signal, or facebook.
+  #   # whatsapp and signal need phone and api_key, and facebook needs api_key. A phone is a
+  #   # plus sign, the country code, and digits only (7 to 15 digits after the plus sign),
+  #   # and signal also accepts a Signal UUID. An api_key can't contain spaces and is at
+  #   # most 128 characters.
+  #   - type: callmebot
+  #     phone: "+15551234567"
+  #     api_key: "1234567890"
+  #     channel: "whatsapp"
+  #     monitors: "all"
+  #
+  #   - type: callmebot
+  #     phone: "+15551234567"
+  #     api_key: "1234567890"
+  #     channel: "signal"
+  #     monitors: "all"
+  #
+  #   - type: callmebot
+  #     api_key: "1234567890"
+  #     channel: "facebook"
+  #     monitors: "all"
+  #
+  #   # generic: sends a JSON POST to the url with the fields monitor, status, response_ms,
+  #   # error, and timestamp.
+  #   - type: generic
+  #     url: "https://example.com/webhook"
+  #     monitors: "all"
+
+  push_alerts: []
